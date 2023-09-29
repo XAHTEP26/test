@@ -1,25 +1,21 @@
-main();
+const header = document.querySelector("header");
+const footer = document.querySelector("footer");
+const checkbox = document.querySelector('input[type="checkbox"]');
 
-async function main() {
-    await registerServiceWorker();
-    const response = await fetch('https://туристическаякарта26.рф/api/objects');
-    const data = await response.json();
-    console.log(data);
+checkbox.addEventListener("change", toggleVisualViewportListener);
+
+function toggleVisualViewportListener() {
+    if (checkbox.checked) {
+        window.visualViewport.addEventListener("scroll", updateTop);
+        updateTop();
+    } else {
+        window.visualViewport.removeEventListener("scroll", updateTop);
+        header.style.top = "0";
+        footer.style.bottom = "0";
+    }
 }
 
-async function registerServiceWorker() {
-    if ('serviceWorker' in navigator) {
-        try {
-            const registration = await navigator.serviceWorker.register('./sw.js');
-            if (registration.installing) {
-                console.log('Service worker installing');
-            } else if (registration.waiting) {
-                console.log('Service worker installed');
-            } else if (registration.active) {
-                console.log('Service worker active');
-            }
-        } catch (e) {
-            console.log(`Failed with error: ${e}`);
-        }
-    }
+function updateTop() {
+    header.style.top = window.visualViewport.offsetTop + "px";
+    footer.style.bottom = window.visualViewport.offsetTop + "px";
 }

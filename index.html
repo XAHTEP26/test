@@ -1,42 +1,87 @@
 <!DOCTYPE html>
 <html lang="ru">
-<title>Test</title>
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Test</title>
+    <style>
+        header {
+            position: sticky;
+            z-index: 1;
+            top: 0;
+            background: lime;
+            padding: 16px;
+        }
+
+        footer {
+            position: sticky;
+            z-index: 1;
+            bottom: 0;
+            background: limegreen;
+            padding: 16px;
+        }
+
+        main {
+            height: 2000px;
+            padding: 16px;
+        }
+
+        section {
+            position: relative;
+        }
+
+        div {
+            border: 1px solid red;
+            padding: 16px;
+        }
+
+        label {
+            display: block;
+            margin-top: 16px;
+        }
+
+        textarea {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
 <main>
     <section>
         <header>HEADER</header>
         <div>
-            <input type="text"><br />
-            <input type="text"><br />
-            <input type="text"><br />
-            <input type="text"><br />
-            <input type="text"><br />
-            <input type="text"><br />
-            <input type="text"><br />
-            <input type="text"><br />
-            <input type="text"><br />
-            <input type="text"><br />
-            <input type="text"><br />
-            <input type="text"><br />
-            <input type="text"><br />
-            <input type="text"><br />
-            <input type="text"><br />
-            <input type="text"><br />
-            <input type="text"><br />
-            <input type="text"><br />
-            <input type="text"><br />
-            <input type="text"><br />
-            <input type="text"><br />
-            <input type="text"><br />
-            <input type="text"><br />
-            <input type="text"><br />
-            <input type="text"><br />
-            <input type="text"><br />
-            <input type="text"><br />
-            <input type="text"><br />
-            <input type="text"><br />
-            <input type="text"><br />
+            <input type="text"><br/>
+            <input type="text"><br/>
+            <input type="text"><br/>
+            <input type="text"><br/>
+            <input type="text"><br/>
+            <input type="text"><br/>
+            <input type="text"><br/>
+            <input type="text"><br/>
+            <input type="text"><br/>
+            <input type="text"><br/>
+            <input type="text"><br/>
+            <input type="text"><br/>
+            <input type="text"><br/>
+            <input type="text"><br/>
+            <input type="text"><br/>
+            <input type="text"><br/>
+            <input type="text"><br/>
+            <input type="text"><br/>
+            <input type="text"><br/>
+            <input type="text"><br/>
+            <input type="text"><br/>
+            <input type="text"><br/>
+            <input type="text"><br/>
+            <input type="text"><br/>
+            <input type="text"><br/>
+            <input type="text"><br/>
+            <input type="text"><br/>
+            <input type="text"><br/>
+            <input type="text"><br/>
+            <input type="text"><br/>
             <label>
-                <input type="checkbox" />
+                <input type="checkbox"/>
                 Use Visual Viewport API
             </label>
             <p>Bla</p>
@@ -68,44 +113,5 @@
     </section>
     <footer>FOOTER</footer>
 </main>
-<style>
-    header {
-        position: sticky;
-        z-index: 1;
-        top: 0;
-        background: lime;
-        padding: 16px;
-    }
-
-    footer {
-        position: sticky;
-        z-index: 1;
-        bottom: 0;
-        background: limegreen;
-        padding: 16px;
-    }
-
-    main {
-        height: 2000px;
-        padding: 16px;
-    }
-
-    section {
-        position: relative;
-    }
-
-    div {
-        border: 1px solid red;
-        padding: 16px;
-    }
-
-    label {
-        display: block;
-        margin-top: 16px;
-    }
-
-    textarea {
-        width: 100%;
-    }
-</style>
-<script type="module" src="/main.js"></script>
+<script src="/main.js" type="module"></script>
+</body>

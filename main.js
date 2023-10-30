@@ -54,7 +54,7 @@ buttonMotion.addEventListener('click', () => initMotion());
 async function initMotion() {
     await printMotionInfo();
     if (!await isMotionAllowed()) return;
-    initOrientationListener();
+    initMotionListener();
 }
 
 function initMotionListener() {

@@ -7,7 +7,7 @@ button.addEventListener('click', () => init());
 
 async function init() {
     await printInfo();
-    if (await getPermission() !== 'granted') return;
+    if (!await isAllowed()) return;
     initListeners();
 }
 
@@ -35,13 +35,17 @@ async function printInfo() {
         deviceorientation: typeof window.ondeviceorientation !== 'undefined',
         deviceorientationabsolute: typeof window.ondeviceorientationabsolute !== 'undefined',
         requestPermission: typeof DeviceOrientationEvent.requestPermission === 'function',
-        permission: await getPermission(),
+        isAllowed: await isAllowed(),
     }, null, 2);
 }
 
-async function getPermission() {
-    return window.DeviceOrientationEvent
-        ? await DeviceOrientationEvent.requestPermission?.() ?? 'granted'
-        : 'denied';
+async function isAllowed() {
+    if (!window.DeviceOrientationEvent) return false;
+    if (!DeviceOrientationEvent.requestPermission) return true;
+    try {
+        return await DeviceOrientationEvent.requestPermission() === 'granted';
+    } catch (e) {
+        console.warn(e);
+        return false;
+    }
 }
-

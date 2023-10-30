@@ -1,12 +1,8 @@
 const buttonOrientation = document.getElementById('orientation-init');
 const outputOrientation = document.getElementById('orientation');
 const outputOrientationInfo = document.getElementById('orientation-info');
-const buttonMotion = document.getElementById('motion-init');
-const outputMotion = document.getElementById('motion');
-const outputMotionInfo = document.getElementById('motion-info');
 
 buttonOrientation.addEventListener('click', () => initOrientation());
-buttonMotion.addEventListener('click', () => initMotion());
 
 async function initOrientation() {
     await printOrientationInfo();
@@ -46,6 +42,14 @@ async function isOrientationAllowed() {
         return false;
     }
 }
+
+/****************************************************/
+
+const buttonMotion = document.getElementById('motion-init');
+const outputMotion = document.getElementById('motion');
+const outputMotionInfo = document.getElementById('motion-info');
+
+buttonMotion.addEventListener('click', () => initMotion());
 
 async function initMotion() {
     await printMotionInfo();

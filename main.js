@@ -17,13 +17,13 @@ function initListeners() {
     function initListener(outputEl, eventName) {
         window.addEventListener(eventName, e => {
             outputEl.innerHTML = JSON.stringify({
+                alphaFixed: Math.round(typeof e.webkitCompassHeading === 'undefined' ? e.alpha : (360 - e.webkitCompassHeading)),
+                alpha: Math.round(e.alpha),
+                beta: Math.round(e.beta),
+                gamma: Math.round(e.gamma),
+                webkitCompassHeading: Math.round(e.webkitCompassHeading),
+                webkitCompassAccuracy: Math.round(e.webkitCompassAccuracy),
                 absolute: e.absolute,
-                alpha: e.alpha,
-                beta: e.beta,
-                gamma: e.gamma,
-                webkitCompassHeading: e.webkitCompassHeading,
-                webkitCompassAccuracy: e.webkitCompassAccuracy,
-                alphaFixed: typeof e.webkitCompassHeading === 'undefined' ? e.alpha : Math.abs(e.webkitCompassHeading - 360),
             }, null, 2);
         });
     }
@@ -33,7 +33,6 @@ async function printInfo() {
     outputInfo.innerHTML = JSON.stringify({
         deviceorientation: typeof window.ondeviceorientation !== 'undefined',
         deviceorientationabsolute: typeof window.ondeviceorientationabsolute !== 'undefined',
-        DeviceOrientationEvent: typeof DeviceOrientationEvent !== 'undefined',
         requestPermission: typeof DeviceOrientationEvent.requestPermission === 'function',
         permission: await getPermission(),
     }, null, 2);

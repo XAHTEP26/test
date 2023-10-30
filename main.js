@@ -61,19 +61,19 @@ function initMotionListener() {
     window.addEventListener('devicemotion', e => {
         outputMotion.innerHTML = JSON.stringify({
             acceleration: {
-                x: e.acceleration.x,
-                y: e.acceleration.y,
-                z: e.acceleration.z,
+                x: Math.round(e.acceleration.x),
+                y: Math.round(e.acceleration.y),
+                z: Math.round(e.acceleration.z),
             },
             accelerationIncludingGravity: {
-                x: e.accelerationIncludingGravity.x,
-                y: e.accelerationIncludingGravity.y,
-                z: e.accelerationIncludingGravity.z,
+                x: Math.round(e.accelerationIncludingGravity.x),
+                y: Math.round(e.accelerationIncludingGravity.y),
+                z: Math.round(e.accelerationIncludingGravity.z),
             },
             rotationRate: {
-                alpha: e.rotationRate.alpha,
-                beta: e.rotationRate.beta,
-                gamma: e.rotationRate.gamma,
+                alpha: Math.round(e.rotationRate.alpha),
+                beta: Math.round(e.rotationRate.beta),
+                gamma: Math.round(e.rotationRate.gamma),
             },
             interval: e.interval,
         }, null, 2);

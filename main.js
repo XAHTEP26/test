@@ -1,8 +1,9 @@
+const button = document.getElementById('init');
 const outputAbsolute = document.getElementById('absolute');
 const outputRelative = document.getElementById('relative');
 const outputInfo = document.getElementById('info');
 
-init();
+button.addEventListener('click', () => init());
 
 async function init() {
     await printInfo();

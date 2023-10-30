@@ -1,18 +1,47 @@
-const header = document.querySelector("header");
-const checkbox = document.querySelector('input[type="checkbox"]');
+const outputAbsolute = document.getElementById('absolute');
+const outputRelative = document.getElementById('relative');
+const outputInfo = document.getElementById('info');
 
-checkbox.addEventListener("change", toggleVisualViewportListener);
+init();
 
-function toggleVisualViewportListener() {
-    if (checkbox.checked) {
-        window.visualViewport.addEventListener("scroll", updateTop);
-        updateTop();
-    } else {
-        window.visualViewport.removeEventListener("scroll", updateTop);
-        header.style.top = "0";
+async function init() {
+    await printInfo();
+    const isAllowed = await getPermission() === 'granted';
+    if (!isAllowed) return;
+    initListeners();
+}
+
+function initListeners() {
+    initListener(outputAbsolute, 'deviceorientationabsolute');
+    initListener(outputRelative, 'deviceorientation');
+
+    function initListener(outputEl, eventName) {
+        window.addEventListener(eventName, e => {
+            outputEl.innerHTML = JSON.stringify({
+                absolute: e.absolute,
+                alpha: e.alpha,
+                beta: e.beta,
+                gamma: e.gamma,
+                webkitCompassHeading: e.webkitCompassHeading,
+                webkitCompassAccuracy: e.webkitCompassAccuracy,
+                alphaFixed: typeof e.webkitCompassHeading === 'undefined' ? e.alpha : Math.abs(e.webkitCompassHeading - 360),
+            }, null, 2);
+        });
     }
 }
 
-function updateTop() {
-    header.style.top = window.visualViewport.offsetTop + "px";
+async function printInfo() {
+    outputInfo.innerHTML = JSON.stringify({
+        deviceorientation: typeof window.ondeviceorientation !== 'undefined',
+        deviceorientationabsolute: typeof window.ondeviceorientationabsolute !== 'undefined',
+        DeviceOrientationEvent: typeof DeviceOrientationEvent !== 'undefined',
+        requestPermission: typeof DeviceOrientationEvent.requestPermission === 'function',
+        permission: await getPermission(),
+    }, null, 2);
 }
+
+async function getPermission() {
+    const needPermission = typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function';
+    return needPermission ? await DeviceOrientationEvent.requestPermission() : 'granted';
+}
+

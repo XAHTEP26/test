@@ -60,9 +60,21 @@ async function initMotion() {
 function initMotionListener() {
     window.addEventListener('devicemotion', e => {
         outputMotion.innerHTML = JSON.stringify({
-            rotationRate: e.rotationRate,
-            acceleration: e.acceleration,
-            accelerationIncludingGravity: e.accelerationIncludingGravity,
+            acceleration: {
+                x: e.acceleration.x,
+                y: e.acceleration.y,
+                z: e.acceleration.z,
+            },
+            accelerationIncludingGravity: {
+                x: e.accelerationIncludingGravity.x,
+                y: e.accelerationIncludingGravity.y,
+                z: e.accelerationIncludingGravity.z,
+            },
+            rotationRate: {
+                alpha: e.rotationRate.alpha,
+                beta: e.rotationRate.beta,
+                gamma: e.rotationRate.gamma,
+            },
             interval: e.interval,
         }, null, 2);
     });

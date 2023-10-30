@@ -6,8 +6,7 @@ init();
 
 async function init() {
     await printInfo();
-    const isAllowed = await getPermission() === 'granted';
-    if (!isAllowed) return;
+    if (await getPermission() !== 'granted') return;
     initListeners();
 }
 
@@ -41,7 +40,8 @@ async function printInfo() {
 }
 
 async function getPermission() {
-    const needPermission = typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function';
-    return needPermission ? await DeviceOrientationEvent.requestPermission() : 'granted';
+    return window.DeviceOrientationEvent
+        ? await DeviceOrientationEvent.requestPermission?.() ?? 'granted'
+        : 'denied';
 }
 

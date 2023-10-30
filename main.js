@@ -1,49 +1,82 @@
-const button = document.getElementById('init');
-const outputAbsolute = document.getElementById('absolute');
-const outputRelative = document.getElementById('relative');
-const outputInfo = document.getElementById('info');
+const buttonOrientation = document.getElementById('orientation-init');
+const outputOrientation = document.getElementById('orientation');
+const outputOrientationInfo = document.getElementById('orientation-info');
+const buttonMotion = document.getElementById('motion-init');
+const outputMotion = document.getElementById('motion');
+const outputMotionInfo = document.getElementById('motion-info');
 
-button.addEventListener('click', () => init());
+buttonOrientation.addEventListener('click', () => initOrientation());
+buttonMotion.addEventListener('click', () => initMotion());
 
-async function init() {
-    await printInfo();
-    if (!await isAllowed()) return;
-    initListeners();
+async function initOrientation() {
+    await printOrientationInfo();
+    if (!await isOrientationAllowed()) return;
+    initOrientationListener();
 }
 
-function initListeners() {
-    initListener(outputAbsolute, 'deviceorientationabsolute');
-    initListener(outputRelative, 'deviceorientation');
-
-    function initListener(outputEl, eventName) {
-        window.addEventListener(eventName, e => {
-            outputEl.innerHTML = JSON.stringify({
-                alphaFixed: Math.round(typeof e.webkitCompassHeading === 'undefined' ? e.alpha : (360 - e.webkitCompassHeading)),
-                alpha: Math.round(e.alpha),
-                beta: Math.round(e.beta),
-                gamma: Math.round(e.gamma),
-                webkitCompassHeading: Math.round(e.webkitCompassHeading),
-                webkitCompassAccuracy: Math.round(e.webkitCompassAccuracy),
-                absolute: e.absolute,
-            }, null, 2);
-        });
-    }
+function initOrientationListener() {
+    const eventName = window.ondeviceorientationabsolute ? 'deviceorientationabsolute' : 'deviceorientation';
+    window.addEventListener(eventName, e => {
+        outputOrientation.innerHTML = JSON.stringify({
+            alpha: Math.round(e.webkitCompassHeading ? (360 - e.webkitCompassHeading) : e.alpha),
+            beta: Math.round(e.beta),
+            gamma: Math.round(e.gamma),
+            absolute: e.absolute,
+            webkitCompassAccuracy: Math.round(e.webkitCompassAccuracy),
+        }, null, 2);
+    });
 }
 
-async function printInfo() {
-    outputInfo.innerHTML = JSON.stringify({
-        deviceorientation: typeof window.ondeviceorientation !== 'undefined',
-        deviceorientationabsolute: typeof window.ondeviceorientationabsolute !== 'undefined',
-        requestPermission: typeof DeviceOrientationEvent.requestPermission === 'function',
-        isAllowed: await isAllowed(),
+async function printOrientationInfo() {
+    outputOrientationInfo.innerHTML = JSON.stringify({
+        deviceorientation: !!window.ondeviceorientation,
+        deviceorientationabsolute: !!window.ondeviceorientationabsolute,
+        requestPermission: !!DeviceOrientationEvent?.requestPermission,
+        isAllowed: await isOrientationAllowed(),
     }, null, 2);
 }
 
-async function isAllowed() {
+async function isOrientationAllowed() {
     if (!window.DeviceOrientationEvent) return false;
     if (!DeviceOrientationEvent.requestPermission) return true;
     try {
         return await DeviceOrientationEvent.requestPermission() === 'granted';
+    } catch (e) {
+        console.warn(e);
+        return false;
+    }
+}
+
+async function initMotion() {
+    await printMotionInfo();
+    if (!await isMotionAllowed()) return;
+    initOrientationListener();
+}
+
+function initMotionListener() {
+    window.addEventListener('devicemotion', e => {
+        outputMotion.innerHTML = JSON.stringify({
+            rotationRate: e.rotationRate,
+            acceleration: e.acceleration,
+            accelerationIncludingGravity: e.accelerationIncludingGravity,
+            interval: e.interval,
+        }, null, 2);
+    });
+}
+
+async function printMotionInfo() {
+    outputMotionInfo.innerHTML = JSON.stringify({
+        devicemotion: !!window.ondevicemotion,
+        requestPermission: !!DeviceMotionEvent?.requestPermission,
+        isAllowed: await isMotionAllowed(),
+    }, null, 2);
+}
+
+async function isMotionAllowed() {
+    if (!window.DeviceMotionEvent) return false;
+    if (!DeviceMotionEvent.requestPermission) return true;
+    try {
+        return await DeviceMotionEvent.requestPermission() === 'granted';
     } catch (e) {
         console.warn(e);
         return false;

@@ -14,20 +14,18 @@ function initOrientationListener() {
     const eventName = window.ondeviceorientationabsolute ? 'deviceorientationabsolute' : 'deviceorientation';
     window.addEventListener(eventName, e => {
         outputOrientation.innerHTML = JSON.stringify({
-            alpha: Math.round(e.webkitCompassHeading ? (360 - e.webkitCompassHeading) : e.alpha),
+            alpha: Math.round(e.webkitCompassHeading ? 360 - e.webkitCompassHeading : e.alpha),
             beta: Math.round(e.beta),
             gamma: Math.round(e.gamma),
-            absolute: e.absolute,
-            webkitCompassAccuracy: Math.round(e.webkitCompassAccuracy),
         }, null, 2);
     });
 }
 
 async function printOrientationInfo() {
     outputOrientationInfo.innerHTML = JSON.stringify({
-        deviceorientation: !!window.ondeviceorientation,
-        deviceorientationabsolute: !!window.ondeviceorientationabsolute,
-        requestPermission: !!DeviceOrientationEvent?.requestPermission,
+        deviceorientation: typeof window.ondeviceorientation !== 'undefined',
+        deviceorientationabsolute: typeof window.ondeviceorientationabsolute !== 'undefined',
+        requestPermission: typeof DeviceOrientationEvent?.requestPermission === 'function',
         isAllowed: await isOrientationAllowed(),
     }, null, 2);
 }
@@ -59,31 +57,51 @@ async function initMotion() {
 
 function initMotionListener() {
     window.addEventListener('devicemotion', e => {
-        outputMotion.innerHTML = JSON.stringify({
-            acceleration: {
-                x: Math.round(e.acceleration.x),
-                y: Math.round(e.acceleration.y),
-                z: Math.round(e.acceleration.z),
-            },
-            accelerationIncludingGravity: {
-                x: Math.round(e.accelerationIncludingGravity.x),
-                y: Math.round(e.accelerationIncludingGravity.y),
-                z: Math.round(e.accelerationIncludingGravity.z),
-            },
-            rotationRate: {
-                alpha: Math.round(e.rotationRate.alpha),
-                beta: Math.round(e.rotationRate.beta),
-                gamma: Math.round(e.rotationRate.gamma),
-            },
-            interval: e.interval,
-        }, null, 2);
+        requestAnimationFrame(() => {
+            outputMotion.innerHTML = JSON.stringify({
+                rotationRate: {
+                    alpha: Math.round(e.rotationRate.alpha),
+                    beta: Math.round(e.rotationRate.beta),
+                    gamma: Math.round(e.rotationRate.gamma),
+                },
+                acceleration: {
+                    x: Math.round(e.acceleration.x),
+                    y: Math.round(e.acceleration.y),
+                    z: Math.round(e.acceleration.z),
+                },
+                accelerationIncludingGravity: {
+                    x: Math.round(e.accelerationIncludingGravity.x),
+                    y: Math.round(e.accelerationIncludingGravity.y),
+                    z: Math.round(e.accelerationIncludingGravity.z),
+                },
+                interval: e.interval,
+            }, null, 2);
+            updateMeters(e, 'rotationRate', ['alpha', 'beta', 'gamma']);
+            updateMeters(e, 'acceleration', ['x', 'y', 'z']);
+            updateMeters(e, 'accelerationIncludingGravity', ['x', 'y', 'z']);
+        })
+    });
+}
+
+function updateMeters(e, name, metrics) {
+    const container = document.querySelector(`.${name}`);
+    metrics.forEach(metric => {
+        const el = container.querySelector(`.${metric}`);
+        const value = e[name][metric];
+        el.querySelector('meter').value = value;
+        const minEl = el.querySelector('.min');
+        const maxEl = el.querySelector('.max');
+        const min = Number(minEl.textContent.trim());
+        const max = Number(maxEl.textContent.trim());
+        if (value < min) minEl.textContent = value;
+        if (value > max) maxEl.textContent = value;
     });
 }
 
 async function printMotionInfo() {
     outputMotionInfo.innerHTML = JSON.stringify({
-        devicemotion: !!window.ondevicemotion,
-        requestPermission: !!DeviceMotionEvent?.requestPermission,
+        devicemotion: typeof window.ondevicemotion !== 'undefined',
+        requestPermission: typeof DeviceMotionEvent?.requestPermission === 'function',
         isAllowed: await isMotionAllowed(),
     }, null, 2);
 }

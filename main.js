@@ -13,11 +13,23 @@ async function initOrientation() {
 function initOrientationListener() {
     const eventName = window.ondeviceorientationabsolute ? 'deviceorientationabsolute' : 'deviceorientation';
     window.addEventListener(eventName, e => {
-        outputOrientation.innerHTML = JSON.stringify({
-            alpha: Math.round(e.webkitCompassHeading ? 360 - e.webkitCompassHeading : e.alpha),
-            beta: Math.round(e.beta),
-            gamma: Math.round(e.gamma),
-        }, null, 2);
+        requestAnimationFrame(() => {
+            const data = {
+                alpha: e.webkitCompassHeading ? 360 - e.webkitCompassHeading : e.alpha,
+                beta: e.beta,
+                gamma: e.gamma,
+            };
+            outputOrientation.innerHTML = JSON.stringify({
+                alpha: Math.round(data.alpha),
+                beta: Math.round(data.beta),
+                gamma: Math.round(data.gamma),
+            }, null, 2);
+            const container = document.querySelector('.orientationMeters');
+            ['alpha', 'beta', 'gamma'].forEach(metric => {
+                const el = container.querySelector(`.${metric}`);
+                el.querySelector('meter').value = data[metric];
+            });
+        });
     });
 }
 
@@ -89,12 +101,9 @@ function updateMeters(e, name, metrics) {
         const el = container.querySelector(`.${metric}`);
         const value = e[name][metric];
         el.querySelector('meter').value = value;
-        const minEl = el.querySelector('.min');
         const maxEl = el.querySelector('.max');
-        const min = Number(minEl.textContent.trim());
-        const max = Number(maxEl.textContent.trim());
-        const roundedValue = Math.round(value);
-        if (roundedValue < min) minEl.textContent = roundedValue;
+        const max = Math.abs(Number(maxEl.textContent.trim()));
+        const roundedValue = Math.abs(Math.round(value));
         if (roundedValue > max) maxEl.textContent = roundedValue;
     });
 }

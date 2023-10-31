@@ -93,8 +93,9 @@ function updateMeters(e, name, metrics) {
         const maxEl = el.querySelector('.max');
         const min = Number(minEl.textContent.trim());
         const max = Number(maxEl.textContent.trim());
-        if (value < min) minEl.textContent = value;
-        if (value > max) maxEl.textContent = value;
+        const roundedValue = Math.round(value);
+        if (roundedValue < min) minEl.textContent = roundedValue;
+        if (roundedValue > max) maxEl.textContent = roundedValue;
     });
 }
 

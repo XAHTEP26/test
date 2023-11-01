@@ -1,11 +1,7 @@
 const buttonOrientation = document.getElementById('orientation-init');
-const outputOrientation = document.getElementById('orientation');
-const outputOrientationInfo = document.getElementById('orientation-info');
-
 buttonOrientation.addEventListener('click', () => initOrientation());
 
 async function initOrientation() {
-    await printOrientationInfo();
     if (!await isOrientationAllowed()) return;
     initOrientationListener();
 }
@@ -19,27 +15,14 @@ function initOrientationListener() {
                 beta: e.beta,
                 gamma: e.gamma,
             };
-            outputOrientation.innerHTML = JSON.stringify({
-                alpha: Math.round(data.alpha),
-                beta: Math.round(data.beta),
-                gamma: Math.round(data.gamma),
-            }, null, 2);
-            const container = document.querySelector('.orientationMeters');
+            const container = document.querySelector('.orientation');
             ['alpha', 'beta', 'gamma'].forEach(metric => {
                 const el = container.querySelector(`.${metric}`);
                 el.querySelector('meter').value = data[metric];
+                el.querySelector('.value').textContent = Math.round(data[metric]);
             });
         });
     });
-}
-
-async function printOrientationInfo() {
-    outputOrientationInfo.innerHTML = JSON.stringify({
-        deviceorientation: typeof window.ondeviceorientation !== 'undefined',
-        deviceorientationabsolute: typeof window.ondeviceorientationabsolute !== 'undefined',
-        requestPermission: typeof DeviceOrientationEvent?.requestPermission === 'function',
-        isAllowed: await isOrientationAllowed(),
-    }, null, 2);
 }
 
 async function isOrientationAllowed() {
@@ -56,13 +39,9 @@ async function isOrientationAllowed() {
 /****************************************************/
 
 const buttonMotion = document.getElementById('motion-init');
-const outputMotion = document.getElementById('motion');
-const outputMotionInfo = document.getElementById('motion-info');
-
 buttonMotion.addEventListener('click', () => initMotion());
 
 async function initMotion() {
-    await printMotionInfo();
     if (!await isMotionAllowed()) return;
     initMotionListener();
 }
@@ -70,24 +49,6 @@ async function initMotion() {
 function initMotionListener() {
     window.addEventListener('devicemotion', e => {
         requestAnimationFrame(() => {
-            outputMotion.innerHTML = JSON.stringify({
-                rotationRate: {
-                    alpha: Math.round(e.rotationRate.alpha),
-                    beta: Math.round(e.rotationRate.beta),
-                    gamma: Math.round(e.rotationRate.gamma),
-                },
-                acceleration: {
-                    x: Math.round(e.acceleration.x),
-                    y: Math.round(e.acceleration.y),
-                    z: Math.round(e.acceleration.z),
-                },
-                accelerationIncludingGravity: {
-                    x: Math.round(e.accelerationIncludingGravity.x),
-                    y: Math.round(e.accelerationIncludingGravity.y),
-                    z: Math.round(e.accelerationIncludingGravity.z),
-                },
-                interval: e.interval,
-            }, null, 2);
             updateMeters(e, 'rotationRate', ['alpha', 'beta', 'gamma']);
             updateMeters(e, 'acceleration', ['x', 'y', 'z']);
             updateMeters(e, 'accelerationIncludingGravity', ['x', 'y', 'z']);
@@ -101,19 +62,8 @@ function updateMeters(e, name, metrics) {
         const el = container.querySelector(`.${metric}`);
         const value = e[name][metric];
         el.querySelector('meter').value = value;
-        const maxEl = el.querySelector('.max');
-        const max = Math.abs(Number(maxEl.textContent.trim()));
-        const roundedValue = Math.abs(Math.round(value));
-        if (roundedValue > max) maxEl.textContent = roundedValue;
+        el.querySelector('.value').textContent = Math.round(value);
     });
-}
-
-async function printMotionInfo() {
-    outputMotionInfo.innerHTML = JSON.stringify({
-        devicemotion: typeof window.ondevicemotion !== 'undefined',
-        requestPermission: typeof DeviceMotionEvent?.requestPermission === 'function',
-        isAllowed: await isMotionAllowed(),
-    }, null, 2);
 }
 
 async function isMotionAllowed() {
@@ -125,4 +75,45 @@ async function isMotionAllowed() {
         console.warn(e);
         return false;
     }
+}
+
+/****************************************************/
+
+const buttonGeolocation = document.getElementById('geolocation-init');
+buttonGeolocation.addEventListener('click', () => initGeolocation());
+
+async function initGeolocation() {
+    if (!await isGeolocationAllowed()) return;
+    initGeolocationListener();
+}
+
+function initGeolocationListener() {
+    navigator.geolocation.watchPosition((position) => {
+        document.getElementById('geolocation').innerHTML = JSON.stringify({
+            coords: {
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
+                accuracy: position.coords.accuracy,
+                altitude: position.coords.altitude,
+                altitudeAccuracy: position.coords.altitudeAccuracy,
+                heading: position.coords.heading,
+                speed: position.coords.speed,
+            },
+            timestamp: position.timestamp,
+        }, null, 2);
+    });
+}
+
+async function isGeolocationAllowed() {
+    if (!navigator.geolocation) return false;
+    if (navigator.permissions) return (await navigator.permissions.query({name: 'geolocation'})).state === 'granted';
+    return await new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(
+            () => resolve(true),
+            (e) => {
+                console.warn(e);
+                reject(false);
+            },
+        );
+    });
 }

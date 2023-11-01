@@ -83,7 +83,6 @@ const buttonGeolocation = document.getElementById('geolocation-init');
 buttonGeolocation.addEventListener('click', () => initGeolocation());
 
 async function initGeolocation() {
-    if (!await isGeolocationAllowed()) return;
     initGeolocationListener();
 }
 
@@ -101,19 +100,5 @@ function initGeolocationListener() {
             },
             timestamp: position.timestamp,
         }, null, 2);
-    });
-}
-
-async function isGeolocationAllowed() {
-    if (!navigator.geolocation) return false;
-    if (navigator.permissions) return (await navigator.permissions.query({name: 'geolocation'})).state === 'granted';
-    return await new Promise((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(
-            () => resolve(true),
-            (e) => {
-                console.warn(e);
-                reject(false);
-            },
-        );
     });
 }
